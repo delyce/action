@@ -27,39 +27,88 @@
 	ul.nomark {
 		list-style: none outside;
 	}
+	li.buttons {
+		padding: 5px 0;
+	}
 
+	.header {
+		border-top: #07d 20px solid;
+	}
+	.header h1 {
+		padding: 0 10px;
+	}
 	.contents {
+		margin: 10px;
 		border: #000 1px solid;
+	}
+	.copyright {
+		padding: 3px;
+		font-size: 8pt;
+		text-align: center;
+		color: #fff;
+		background-color: #777;
+	}
+
+	#enchant-stage {
+		background-color: #000;
 	}
 </style>
 <script type="text/javascript" src="jquery.min.js"></script>
 <script type="text/javascript" src="enchant.min.js"></script>
 <script type="text/javascript">
 	var __FPS = 15;
-	var __WIDTH = 600;
-	var __HEIGHT = 450;
+	var __WIDTH = 320;
+	var __HEIGHT = 240;
 
 	$(function(){
 		enchant();
 
+		var game = new Core(__WIDTH, __HEIGHT);
+
 		$("#controller").each(function(){
-			$(this).find("[name=fps]").val(__FPS);
-			$(this).find("[name=width]").val(__WIDTH);
-			$(this).find("[name=height]").val(__HEIGHT);
-			$(this).find("[name=config-button"]).bind("click", function(){
-				
+			var _this = $(this);
+			_this.find("[name=fps]").val(__FPS);
+			_this.find("[name=width]").val(__WIDTH);
+			_this.find("[name=height]").val(__HEIGHT);
+			_this.find("[name=config-button]").bind("click", function(){
+				game.fps = _this.find("[name=fps]").val();
+				game.width = _this.find("[name=width]").val();
+				game.height = _this.find("[name=height]").val();
 			});
 		});
 
-		var game = new Core(__WIDTH, __HEIGHT);
 		game.fps = __FPS;
-		game.preload("chara1.png");
+		game.preload("chara1.png", "map1.png");
+		game.scale = 2;
 		game.addEventListener("load", function(){
+	        var map = new Map(16, 16);
+	        map.image = game.assets["map1.png"];
+	        map.loadData(
+	            [
+					[  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
+					[  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
+					[  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
+					[  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
+					[  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
+					[  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
+					[  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
+					[  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
+					[100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
+					[100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
+					[100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
+					[100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
+					[100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
+					[100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
+					[100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
+	            ]
+	        );
+	        game.rootScene.addChild(map);
+
 			var bear = new Sprite(32, 32);
 			bear.image = game.assets["chara1.png"];
-			bear.x = 0;
-			bear.y = 0;
-			bear.frame = [6, 6, 6, 7, 7, 7];
+			bear.x = 10;
+			bear.y = 150;
+			bear.frame = 5;
 			game.rootScene.addChild(bear);
 		});
 		game.start();
@@ -73,11 +122,11 @@
 		<form id="controller">
 			<ul class="nomark">
 				<li>
-					FPS: <input type="text" name="fps" value="" size="3" maxlength="2" /> fps
-					/ Size: <input type="text" name="width" value="" size="5" maxlength="4" />
-					x <input type="text" name="height" value="" size="5" maxlength="4" /> px
+					FPS: <input type="text" name="fps" value="" size="3" maxlength="2" style="text-align:center;ime-mode:disabled" /> fps
+					/ Size: <input type="text" name="width" value="" size="5" maxlength="4" style="text-align:center;ime-mode:disabled" />
+					x <input type="text" name="height" value="" size="5" maxlength="4" style="text-align:center;ime-mode:disabled" /> px
 				</li>
-				<li>
+				<li class="buttons">
 					<input type="button" name="config-button" value="設定" />
 				</li>
 			</ul>
