@@ -66,13 +66,6 @@
 		$("#menu").bind("click", function(){
 			$("#menu-layer").slideToggle();
 		});
-
-		$("html").bind("pageshow", function(){
-			$(this).find(".fixed").css({position:"fixed"});
-		});
-		$("html").bind("pagehide", function(){
-			$(this).find(".fixed").css({position:"absolute"});
-		});
 	});
 
 	$(function(){
@@ -84,29 +77,6 @@
 			];
 
 		var core = new Core(480, 480);
-
-		var loadingScene = new Scene();
-		loadingScene.addChild((function(){
-			var label = new Label();
-			label.x = 250;
-			label.y = 250;
-			label.text = "Loading...";
-			return label;
-		})());
-		loadingScene.addEventListener("progress", function(e){
-			var progress = e.loaded / e.total;
-			progress *= 100;
-			progress = Math.round(progress);
-			this.removeChild(this.firstChild);
-			this.addChild((function(){
-				var label = new Label();
-				label.x = 250;
-				label.y = 250;
-				label.text = "Loading... " + progress + "%";
-				return label;
-			})());
-		});
-		core.loadingScene = loadingScene;
 
 		var portrait = new Scene();
 		var landscape = new Scene();
