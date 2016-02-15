@@ -5,6 +5,7 @@
 <title>パステルゾンビ（仮）</title>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0" />
 <link rel="stylesheet" type="text/css" href="normalize.min.css" />
+<link rel="stylesheet" type="text/css" href="fonts.min.css" />
 <style type="text/css">
 	body {
 		font-family: "Meiryo", sans-serif;
@@ -24,65 +25,129 @@
 		border-color: #ddd #777 #777 #ddd;
 	}
 
-	ul.nomark {
-		list-style: none outside;
-	}
-	li.buttons {
-		padding: 5px 0;
+	body {
+		margin: 0;
+		padding: 0;
+		border: 0;
 	}
 
-	.header {
-		border-top: #07d 20px solid;
+	.menubar {
+		border-top: #000 5px solid;
+		background-color: #fff;
 	}
-	.header h1 {
+	.menubar h1 {
+		margin: 0;
 		padding: 0 10px;
+		color: #333;
+		font-size: 12pt;
+		line-height: 2.0;
 	}
 	.contents {
-		margin: 10px;
-		border: #000 1px solid;
 	}
-	.copyright {
-		padding: 3px;
-		font-size: 8pt;
-		text-align: center;
-		color: #fff;
-		background-color: #777;
+
+	#menu {
+		padding: 0 3px;
+		border: #ddd 1px solid;
+		border-radius: 1px;
+		cursor: pointer;
+	}
+	#menu-layer {
+		display: none;
 	}
 
 	#enchant-stage {
-		background-color: #000;
 	}
 </style>
 <script type="text/javascript" src="jquery.min.js"></script>
 <script type="text/javascript" src="enchant.min.js"></script>
 <script type="text/javascript">
-	var __FPS = 15;
-	var __WIDTH = 320;
-	var __HEIGHT = 240;
+
+	$(function(){
+		$("#menu").bind("click", function(){
+			$("#menu-layer").slideToggle();
+		});
+
+		$("html").bind("pageshow", function(){
+			$(this).find(".fixed").css({position:"fixed"});
+		});
+		$("html").bind("pagehide", function(){
+			$(this).find(".fixed").css({position:"absolute"});
+		});
+	});
 
 	$(function(){
 		enchant();
 
-		var game = new Core(__WIDTH, __HEIGHT);
+		var assets = [
+				"chara1.png",
+				"map1.png"
+			];
 
-		$("#controller").each(function(){
-			var _this = $(this);
-			_this.find("[name=fps]").val(__FPS);
-			_this.find("[name=width]").val(__WIDTH);
-			_this.find("[name=height]").val(__HEIGHT);
-			_this.find("[name=config-button]").bind("click", function(){
-				game.fps = _this.find("[name=fps]").val();
-				game.width = _this.find("[name=width]").val();
-				game.height = _this.find("[name=height]").val();
-			});
+		var core = new Core(480, 480);
+
+		var loadingScene = new Scene();
+		loadingScene.addChild((function(){
+			var label = new Label();
+			label.x = 250;
+			label.y = 250;
+			label.text = "Loading...";
+			return label;
+		})());
+		loadingScene.addEventListener("progress", function(e){
+			var progress = e.loaded / e.total;
+			progress *= 100;
+			progress = Math.round(progress);
+			this.removeChild(this.firstChild);
+			this.addChild((function(){
+				var label = new Label();
+				label.x = 250;
+				label.y = 250;
+				label.text = "Loading... " + progress + "%";
+				return label;
+			})());
+		});
+		core.loadingScene = loadingScene;
+
+		var portrait = new Scene();
+		var landscape = new Scene();
+
+		portrait.addChild((function(){
+			var label = new Label("portrait");
+			label.x = 10;
+			label.y = 10;
+			return label;
+		})());
+
+		landscape.addChild((function(){
+			var label = new Label("landscape");
+			label.x = 10;
+			label.y = 10;
+			return label;
+		})());
+
+		if ($(window).attr("orientation") == 0) {
+			core.pushScene(portrait);
+		}
+		else {
+			core.pushScene(landscape);
+		}
+
+		$(window).bind("orientationchange", function(){
+			core.popScene();
+			if ($(window).attr("orientation") == 0) {
+				core.replaceScene(portrait);
+			}
+			else {
+				core.replaceScene(landscape);
+			}
 		});
 
-		game.fps = __FPS;
-		game.preload("chara1.png", "map1.png");
-		game.scale = 2;
-		game.addEventListener("load", function(){
+		core.fps = 15;
+		core.preload(assets);
+		core.scale = 1;
+		core.addEventListener("load", function(){
 	        var map = new Map(16, 16);
-	        map.image = game.assets["map1.png"];
+	        map.image = core.assets["map1.png"];
 	        map.loadData(
 	            [
 					[  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
@@ -102,41 +167,33 @@
 					[100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
 	            ]
 	        );
-	        game.rootScene.addChild(map);
+	        core.rootScene.addChild(map);
 
 			var bear = new Sprite(32, 32);
-			bear.image = game.assets["chara1.png"];
+			bear.image = core.assets["chara1.png"];
 			bear.x = 10;
 			bear.y = 150;
 			bear.frame = 5;
-			game.rootScene.addChild(bear);
+			core.rootScene.addChild(bear);
 		});
-		game.start();
+		core.start();
 	});
 </script>
 </head>
 <body>
 <div class="container">
-	<div class="header">
-		<h1>パステルゾンビ <span class="version">v0.1</span></h1>
-		<form id="controller">
-			<ul class="nomark">
-				<li>
-					FPS: <input type="text" name="fps" value="" size="3" maxlength="2" style="text-align:center;ime-mode:disabled" /> fps
-					/ Size: <input type="text" name="width" value="" size="5" maxlength="4" style="text-align:center;ime-mode:disabled" />
-					x <input type="text" name="height" value="" size="5" maxlength="4" style="text-align:center;ime-mode:disabled" /> px
-				</li>
-				<li class="buttons">
-					<input type="button" name="config-button" value="設定" />
-				</li>
-			</ul>
-		</form>
+	<div class="menubar">
+		<h1>
+			<span id="menu" class="icon-menu"></span>
+			パステルゾンビ
+			<span class="version">v0.1</span>
+		</h1>
+		<div id="menu-layer">
+			15 fps
+		</div>
 	</div>
 	<div class="contents">
 		<div id="enchant-stage"></div>
-	</div>
-	<div class="footer">
-		<div class="copyright">(C) 2016, delyce All Rights Rserved.</div>
 	</div>
 </div>
 <body>
