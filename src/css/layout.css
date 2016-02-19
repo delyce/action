@@ -1,0 +1,50 @@
+body {
+	font-family: "Meiryo", sans-serif;
+	cursor: default;
+}
+input {
+	font-family: "Meiryo UI", sans-serif;
+}
+
+input[type=text] {
+	border: 1px solid;
+	border-color: #777 #ddd #ddd #777;
+}
+input[type=button] {
+	background-color: #eee;
+	border: 1px solid;
+	border-color: #ddd #777 #777 #ddd;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+.menubar {
+	border-top: #000 5px solid;
+	background-color: #fff;
+}
+.menubar h1 {
+	margin: 0;
+	padding: 0 10px;
+	color: #333;
+	font-size: 12pt;
+	line-height: 2.0;
+}
+.contents {
+}
+
+#menu {
+	padding: 0 3px;
+	border: #ddd 1px solid;
+	border-radius: 1px;
+	cursor: pointer;
+}
+#menu-layer {
+	display: none;
+}
+
+#enchant-stage {
+}
